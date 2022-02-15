@@ -8,10 +8,9 @@ def webServer(port=13331):
 #Socket()
   serverSocket = socket(AF_INET, SOCK_STREAM)
   #Prepare a TCP server socket bind()
-  serverSocket.bind(("", port))
+  serverSocket.bind(("127.0. 0.1", port))
   #Fill in start
   serverSocket.listen(1)
-  #print("The server is ready to receive")
   #Fill in end
 
   while True:
@@ -21,37 +20,35 @@ def webServer(port=13331):
     try:
 
       try:
-        message = connectionSocket.recv(1024)
-        file = message.split()[1]
-        filename = file[1:]
+        message = connectionSocket.recv(1024).decode()
+        filename = message.split()[1]
+        #filename = file[1:]
         f = open(filename[1:])
-        outputdata = f.read()
-        f.close()
+        outputdata = f.readlines()
+       # f.close()
 
         #Send one HTTP header line into socket.
-        #Fill in start
-        connectionSocket.send("HTTP/1.1 200 OK\r\n\r\n".encode())
-        connectionSocket.send("Content-Length: {}\r\n".format(len(outputdata)).encode())
-        connectionSocket.send("Content-Type: text/html\r\n".encode())
-        connectionSocket.send("\r\n".encode()
+
+        connectionSocket.send("HTTP/1.0 200 OK\r\n".encode())
+#         connectionSocket.send("Content-Length: {}\r\n".format(len(outputdata)).encode())
+#         connectionSocket.send("Content-Type: text/html\r\n".encode())
+#         connectionSocket.send("\r\n".encode())
         #Fill in end
 
         #Send the content of the requested file to the client
         for i in range(0, len(outputdata)):
-          connectionSocket.send(outputdata[i].encode()
+          connectionSocket.send(outputdata[i].encode())
         connectionSocket.send("\r\n".encode())
         connectionSocket.close()
       except IOError:
         # Send response message for file not found (404)
         #Fill in start
-        connectionSocket.send("HTTP/1.1 400 ERROR: File Not Found\r\n".encode())
+        connectionSocket.send("HTTP/1.0 400 ERROR:File Not Found".encode())
         #Fill in end
 
 
         #Close client socket
-        #Fill in start
         connectionSocket.close()
-        #Fill in end
 
     except (ConnectionResetError, BrokenPipeError):
       pass
