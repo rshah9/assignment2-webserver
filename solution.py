@@ -22,7 +22,8 @@ def webServer(port=13331):
 
       try:
         message = connectionSocket.recv(1024)
-        filename = message.split()[1]
+        file = message.split()[1]
+        filename = file[1:]
         f = open(filename[1:])
         outputdata = f.read()
         f.close()
@@ -32,13 +33,12 @@ def webServer(port=13331):
         connectionSocket.send("HTTP/1.1 200 OK\r\n\r\n".encode())
         connectionSocket.send("Content-Length: {}\r\n".format(len(outputdata)).encode())
         connectionSocket.send("Content-Type: text/html\r\n".encode())
-        connectionSocket.send("\r\n".encode())
+        connectionSocket.send("\r\n".encode()
         #Fill in end
 
         #Send the content of the requested file to the client
         for i in range(0, len(outputdata)):
           connectionSocket.send(outputdata[i].encode()
-
         connectionSocket.send("\r\n".encode())
         connectionSocket.close()
       except IOError:
